@@ -21,14 +21,23 @@ readLines('https://api.exchangeratesapi.io/latest?base=USD')
 usdhuf
 
 # getting current bitcoin price and converting 
+## this is where the real stuff starts
 
 # create a constant on top
+
 BITCOINS <-0.42 
 log_info('Number of Bitcoins: {BITCOINS}') # glue package
 
-## TODO the Binance API is a bit of mess... need to add retries
 
-btcusdt <- binance_coins_prices() [symbol == 'BTC', usd]
+get_bitcoin_price <- function() {
+  tryCatch( binance_coins_prices() [symbol == 'BTC', usd],
+            error= function(e) get_bitcoin_price()  )
+}
+
+get_bitcoin_price()
+
+
+btcusdt <- get_bitcoin_price()
 log_info('The value of 1 Bitcoin in USD : {btcusdt}')
 
 # create object for huf conversion
