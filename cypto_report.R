@@ -4,6 +4,7 @@ library(jsonlite)
 library(httr)
 library(logger)
 library(checkmate)
+library(scales)
 log_threshold(TRACE)
 prices <- binance_ticker_all_prices()
 prices[from == 'BTC' & to == 'USDT', price]
@@ -32,24 +33,34 @@ BITCOINS <-0.42
 log_info('Number of Bitcoins: {BITCOINS}') # glue package
 
 
-get_bitcoin_price <- function() {
+get_bitcoin_price <- function(retried = 0) {
   tryCatch( binance_coins_prices() [symbol == 'BTC', usd],
-            error= function(e) get_bitcoin_price()  )
+            error= function(e) {
+              ## exponential backoff retries
+              Sys.sleep(1 + retried^2)
+              get_bitcoin_price(retried = retried + 1)  
+              })
 }
 
 get_bitcoin_price()
 
+forint <-  function(x) {
+  dollar(x, prefix = '', suffix = 'Ft')
+  
+}
 
 btcusdt <- get_bitcoin_price()
-#log_info('The value of 1 Bitcoin in USD : {btcusdt}')
-log_eval(btcusdt)
+log_info('The value of 1 Bitcoin  : {dollar(btcusdt)}')
+#log_eval(btcusdt)
 assert_number(btcusdt, lower = 1000)
+
+
 
 # create object for huf conversion
 usdhuf <- fromJSON('https://api.exchangeratesapi.io/latest?base=USD&symbola=HUF')$rates$HUF
-#log_info('The value of 1 USD in huf: {usdhuf}')
-log_eval(usdhuf)
+log_info('The value of 1 USD: {forint(usdhuf)}')
+#log_eval(usdhuf)
 assert_number(usdhuf, lower = 250, upper = 500)
 
-log_eval(BITCOINS * btcusdt * usdhuf) ##TODO formatting ( use space around operators and after comma)
+log_eval(forint(BITCOINS * btcusdt * usdhuf)) ##TODO formatting ( use space around operators and after comma)
 
