@@ -47,7 +47,7 @@ assert_number(btcusdt, lower = 1000)
 # create object for huf conversion
 usdhuf <- fromJSON('https://api.exchangeratesapi.io/latest?base=USD&symbola=HUF')$rates$HUF
 log_info('The value of 1 USD in huf: {usdhuf}')
-assert_number(usdhuf, lower = 250)
+assert_number(usdhuf, lower = 250, upper = 500)
 
 BITCOINS * btcusdt * usdhuf
 
