@@ -3,6 +3,8 @@ library(lubridate)
 library(jsonlite)
 library(httr)
 library(logger)
+library(checkmate)
+
 prices <- binance_ticker_all_prices()
 prices[from == 'BTC' & to == 'USDT', price]
 
@@ -21,6 +23,7 @@ readLines('https://api.exchangeratesapi.io/latest?base=USD')
 usdhuf
 
 # getting current bitcoin price and converting 
+
 ## this is where the real stuff starts
 
 # create a constant on top
@@ -39,10 +42,12 @@ get_bitcoin_price()
 
 btcusdt <- get_bitcoin_price()
 log_info('The value of 1 Bitcoin in USD : {btcusdt}')
+assert_number(btcusdt, lower = 1000)
 
 # create object for huf conversion
 usdhuf <- fromJSON('https://api.exchangeratesapi.io/latest?base=USD&symbola=HUF')$rates$HUF
-
+log_info('The value of 1 USD in huf: {usdhuf}')
+assert_number(usdhuf, lower = 250)
 
 BITCOINS * btcusdt * usdhuf
 
