@@ -4,7 +4,7 @@ library(jsonlite)
 library(httr)
 library(logger)
 library(checkmate)
-
+log_threshold(TRACE)
 prices <- binance_ticker_all_prices()
 prices[from == 'BTC' & to == 'USDT', price]
 
@@ -41,13 +41,15 @@ get_bitcoin_price()
 
 
 btcusdt <- get_bitcoin_price()
-log_info('The value of 1 Bitcoin in USD : {btcusdt}')
+#log_info('The value of 1 Bitcoin in USD : {btcusdt}')
+log_eval(btcusdt)
 assert_number(btcusdt, lower = 1000)
 
 # create object for huf conversion
 usdhuf <- fromJSON('https://api.exchangeratesapi.io/latest?base=USD&symbola=HUF')$rates$HUF
-log_info('The value of 1 USD in huf: {usdhuf}')
+#log_info('The value of 1 USD in huf: {usdhuf}')
+log_eval(usdhuf)
 assert_number(usdhuf, lower = 250, upper = 500)
 
-BITCOINS * btcusdt * usdhuf
+log_eval(BITCOINS * btcusdt * usdhuf) ##TODO formatting ( use space around operators and after comma)
 
