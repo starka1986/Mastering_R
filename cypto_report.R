@@ -49,6 +49,8 @@ forint <-  function(x) {
   
 }
 
+#source{utils.R}
+
 btcusdt <- get_bitcoin_price()
 log_info('The value of 1 Bitcoin  : {dollar(btcusdt)}')
 #log_eval(btcusdt)
